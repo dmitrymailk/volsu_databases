@@ -8,11 +8,14 @@
   },
   "dependencies": {
     "axios": "^0.26.1",
+    "bootstrap-icons": "^1.8.1",
     "core-js": "^3.8.3",
     "vue": "^3.2.13",
     "vue-class-component": "^8.0.0-0",
     "vue-router": "^4.0.3",
-    "vuex": "^4.0.0"
+    "vuex": "^4.0.0",
+    "sass": "^1.32.11",
+    "sass-loader": "10.1.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~5.0.0",
