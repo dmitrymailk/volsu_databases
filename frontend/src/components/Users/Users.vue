@@ -129,7 +129,10 @@ export default {
 
       if (len(user_name) == 0) {
         error = true;
-        this.displayMessages.push("Incorrect user_name");
+        this.displayMessages.push({
+          type: "error",
+          text: "Incorrect user_name",
+        });
       }
 
       if (isNaN(user_credit) || len(user_credit) == 0) {
@@ -140,17 +143,14 @@ export default {
         });
       }
 
-      if (len(user_phone) == 0) {
+      if (len(user_phone) == 0 || isNaN(user_phone)) {
         error = true;
         this.displayMessages.push({
           type: "error",
           text: "Incorrect user_phone",
         });
       }
-      if (len(user_phone) == 0 || isNaN(user_phone)) {
-        error = true;
-        this.displayMessages.push("Incorrect user_phone");
-      }
+
       if (len(user_email) == 0) {
         error = true;
         this.displayMessages.push({
@@ -165,7 +165,6 @@ export default {
           type: "error",
           text: "Incorrect user_admin",
         });
-        this.displayMessages.push("Incorrect user_admin");
       }
       if (!isBool(user_read)) {
         error = true;

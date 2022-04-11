@@ -3,19 +3,21 @@
   <td v-for="colData in props">{{ colData }}</td>
 </template>
 
-<script lang="ts" setup>
+<script>
 import axios from "axios";
 
-const props = defineProps<{
-  user_admin: string;
-  user_credit: string;
-  user_email: string;
-  user_hash: string;
-  user_id: string;
-  user_name: string;
-  user_phone: string;
-  user_read: string;
-  user_write: string;
-  index: number;
-}>();
+export default {
+  props: [
+    "user_id",
+    "user_name",
+    "user_hash",
+    "user_credit",
+    "user_phone",
+    "user_email",
+    "user_admin",
+    "user_read",
+    "user_write",
+  ],
+  data() {},
+};
 </script>
