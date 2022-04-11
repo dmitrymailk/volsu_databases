@@ -58,173 +58,163 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Vue } from "vue-class-component";
+<script>
 import axios from "axios";
 
-export default class Users extends Vue {
-  name: string = "Users";
-  usersData: Array<any> = [];
-  usersCols: Array<string> = [];
-  allowedFields: Array<string> = [
-    "user_name",
-    "user_credit",
-    "user_phone",
-    "user_email",
-    "user_admin",
-    "user_read",
-    "user_write",
-  ];
+export default {
+  data() {
+    return {
+      name: "Users",
+      usersData: [],
+      usersCols: [],
+      allowedFields: [
+        "user_name",
+        "user_credit",
+        "user_phone",
+        "user_email",
+        "user_admin",
+        "user_read",
+        "user_write",
+      ],
+      displayMessages: [],
+      newUser: {},
+    };
+  },
+  methods: {
+    isFieldWritable(field_name) {
+      return this.allowedFields.includes(field_name);
+    },
+    changeNewUserField(e, colData) {
+      const value = String(e.target.value);
+      this.newUser[colData] = value;
+    },
+    async getUsers() {
+      let users = await axios.get("http://localhost:5000/api/v1/users/");
+      users = users.data;
+      const usersCols = Object.keys(users[0]);
+      for (let item of usersCols) {
+        this.newUser[item] = "";
+      }
+      this.usersCols = usersCols;
 
-  displayMessages: Array<any> = [];
+      for (let user of users) {
+        let item = [];
+        for (let col of usersCols) {
+          item.push(user[col]);
+        }
+        this.usersData.push(item);
+      }
+    },
+    async addItem() {
+      this.displayMessages = [];
+      console.log("add item");
+      const len = (elem) => elem.length;
+      const isBool = (str) => str == "0" || str == "1";
+      let error = false;
 
-  newUser: any = {};
+      // @ts-ignore
+      let user_credit = this.newUser["user_credit"];
+      // @ts-ignore
+      let user_name = this.newUser["user_name"];
+      // @ts-ignore
+      let user_phone = this.newUser["user_phone"];
+      // @ts-ignore
+      let user_email = this.newUser["user_email"];
+      // @ts-ignore
+      let user_admin = this.newUser["user_admin"];
+      // @ts-ignore
+      let user_read = this.newUser["user_read"];
+      // @ts-ignore
+      let user_write = this.newUser["user_write"];
 
-  isFieldWritable(field_name: string) {
-    return this.allowedFields.includes(field_name);
-  }
+      if (len(user_name) == 0) {
+        error = true;
+        this.displayMessages.push("Incorrect user_name");
+      }
 
-  changeNewUserField(e: InputEvent, colData: string) {
-    // console.log(e, colData);
-    // @ts-ignore
-    const value: string = String(e.target.value);
-    // console.log(value);
-    this.newUser[colData] = value;
-  }
+      if (isNaN(user_credit) || len(user_credit) == 0) {
+        error = true;
+        this.displayMessages.push({
+          type: "error",
+          text: "Incorrect user_credit",
+        });
+      }
 
+      if (len(user_phone) == 0) {
+        error = true;
+        this.displayMessages.push({
+          type: "error",
+          text: "Incorrect user_phone",
+        });
+      }
+      if (len(user_phone) == 0 || isNaN(user_phone)) {
+        error = true;
+        this.displayMessages.push("Incorrect user_phone");
+      }
+      if (len(user_email) == 0) {
+        error = true;
+        this.displayMessages.push({
+          type: "error",
+          text: "Incorrect user_email",
+        });
+      }
+
+      if (!isBool(user_admin)) {
+        error = true;
+        this.displayMessages.push({
+          type: "error",
+          text: "Incorrect user_admin",
+        });
+        this.displayMessages.push("Incorrect user_admin");
+      }
+      if (!isBool(user_read)) {
+        error = true;
+        this.displayMessages.push({
+          type: "error",
+          text: "Incorrect user_read",
+        });
+      }
+
+      if (!isBool(user_write)) {
+        error = true;
+        this.displayMessages.push({
+          type: "error",
+          text: "Incorrect user_write",
+        });
+      }
+
+      if (!error) {
+        console.log("send to server");
+        user_admin = Number(user_admin);
+        user_write = Number(user_write);
+        user_read = Number(user_read);
+        user_credit = Number(user_credit);
+
+        let userData = {
+          user_credit,
+          user_name,
+          user_phone,
+          user_email,
+          user_admin,
+          user_read,
+          user_write,
+        };
+        try {
+          // await axios.post("http://localhost:5000/api/v1/users/", userData);
+          this.displayMessages.push({
+            type: "success",
+            text: "User successfully added",
+          });
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    },
+  },
   async mounted() {
     await this.getUsers();
-  }
-
-  async getUsers() {
-    let users = await axios.get("http://localhost:5000/api/v1/users/");
-    users = users.data;
-    // @ts-ignore
-    const usersCols: Array<string> = Object.keys(users[0]);
-    for (let item of usersCols) {
-      // @ts-ignore
-      this.newUser[item] = "";
-    }
-    // console.log(usersCols);
-    this.usersCols = usersCols;
-
-    // @ts-ignore
-    for (let user of users) {
-      let item = [];
-      for (let col of usersCols) {
-        item.push(user[col]);
-      }
-      // @ts-ignore
-      this.usersData.push(item);
-    }
-  }
-
-  async addItem() {
-    this.displayMessages = [];
-    console.log("add item");
-    const len = (elem: any) => elem.length;
-    const isBool = (str: string) => str == "0" || str == "1";
-    let error = false;
-
-    // @ts-ignore
-    let user_credit = this.newUser["user_credit"];
-    // @ts-ignore
-    let user_name = this.newUser["user_name"];
-    // @ts-ignore
-    let user_phone = this.newUser["user_phone"];
-    // @ts-ignore
-    let user_email = this.newUser["user_email"];
-    // @ts-ignore
-    let user_admin = this.newUser["user_admin"];
-    // @ts-ignore
-    let user_read = this.newUser["user_read"];
-    // @ts-ignore
-    let user_write = this.newUser["user_write"];
-
-    if (len(user_name) == 0) {
-      error = true;
-      this.displayMessages.push("Incorrect user_name");
-    }
-
-    if (isNaN(user_credit) || len(user_credit) == 0) {
-      error = true;
-      this.displayMessages.push({
-        type: "error",
-        text: "Incorrect user_credit",
-      });
-    }
-
-    if (len(user_phone) == 0) {
-      error = true;
-      this.displayMessages.push({
-        type: "error",
-        text: "Incorrect user_phone",
-      });
-    }
-    if (len(user_phone) == 0 || isNaN(user_phone)) {
-      error = true;
-      this.displayMessages.push("Incorrect user_phone");
-    }
-    if (len(user_email) == 0) {
-      error = true;
-      this.displayMessages.push({
-        type: "error",
-        text: "Incorrect user_email",
-      });
-    }
-
-    if (!isBool(user_admin)) {
-      error = true;
-      this.displayMessages.push({
-        type: "error",
-        text: "Incorrect user_admin",
-      });
-      this.displayMessages.push("Incorrect user_admin");
-    }
-    if (!isBool(user_read)) {
-      error = true;
-      this.displayMessages.push({
-        type: "error",
-        text: "Incorrect user_read",
-      });
-    }
-
-    if (!isBool(user_write)) {
-      error = true;
-      this.displayMessages.push({
-        type: "error",
-        text: "Incorrect user_write",
-      });
-    }
-
-    if (!error) {
-      console.log("send to server");
-      user_admin = Number(user_admin);
-      user_write = Number(user_write);
-      user_read = Number(user_read);
-      user_credit = Number(user_credit);
-
-      let userData = {
-        user_credit,
-        user_name,
-        user_phone,
-        user_email,
-        user_admin,
-        user_read,
-        user_write,
-      };
-      try {
-        // await axios.post("http://localhost:5000/api/v1/users/", userData);
-        this.displayMessages.push({
-          type: "success",
-          text: "User successfully added",
-        });
-      } catch (e) {
-        console.error(e);
-      }
-    }
-  }
-}
+  },
+};
 </script>
 
 <style lang="sass">
