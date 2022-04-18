@@ -6,13 +6,21 @@
         <tr>
           <th scope="col">#</th>
           <th scope="col" v-for="col in usersCols">{{ col }}</th>
+          <th>Controls</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(user, index) in usersData">
+        <!-- <tr v-for="(user, index) in usersData">
           <th scope="row">{{ index }}</th>
           <td v-for="colData in user">{{ colData }}</td>
-        </tr>
+        </tr> -->
+        <UserItem
+          :userObject="user"
+          :usersCols="usersCols"
+          :user_index="index"
+          :getUsers="getUsers"
+          v-for="(user, index) in usersData"
+        />
 
         <!-- add new item -->
         <tr>
@@ -60,7 +68,7 @@
 
 <script>
 import axios from "axios";
-
+import UserItem from "./UserItem.vue";
 export default {
   data() {
     return {
@@ -80,6 +88,9 @@ export default {
       newUser: {},
     };
   },
+  components: {
+    UserItem,
+  },
   methods: {
     isFieldWritable(field_name) {
       return this.allowedFields.includes(field_name);
@@ -89,6 +100,7 @@ export default {
       this.newUser[colData] = value;
     },
     async getUsers() {
+      this.usersData = [];
       let users = await axios.get("http://localhost:5000/api/v1/users/");
       users = users.data;
       const usersCols = Object.keys(users[0]);
@@ -97,13 +109,14 @@ export default {
       }
       this.usersCols = usersCols;
 
-      for (let user of users) {
-        let item = [];
-        for (let col of usersCols) {
-          item.push(user[col]);
-        }
-        this.usersData.push(item);
-      }
+      // for (let user of users) {
+      //   let item = [];
+      //   for (let col of usersCols) {
+      //     item.push(user[col]);
+      //   }
+      //   this.usersData.push(item);
+      // }
+      this.usersData = users;
     },
     async addItem() {
       this.displayMessages = [];
@@ -112,19 +125,12 @@ export default {
       const isBool = (str) => str == "0" || str == "1";
       let error = false;
 
-      // @ts-ignore
       let user_credit = this.newUser["user_credit"];
-      // @ts-ignore
       let user_name = this.newUser["user_name"];
-      // @ts-ignore
       let user_phone = this.newUser["user_phone"];
-      // @ts-ignore
       let user_email = this.newUser["user_email"];
-      // @ts-ignore
       let user_admin = this.newUser["user_admin"];
-      // @ts-ignore
       let user_read = this.newUser["user_read"];
-      // @ts-ignore
       let user_write = this.newUser["user_write"];
 
       if (len(user_name) == 0) {
@@ -199,11 +205,12 @@ export default {
           user_write,
         };
         try {
-          // await axios.post("http://localhost:5000/api/v1/users/", userData);
+          await axios.post("http://localhost:5000/api/v1/users/", userData);
           this.displayMessages.push({
             type: "success",
             text: "User successfully added",
           });
+          this.getUsers();
         } catch (e) {
           console.error(e);
         }

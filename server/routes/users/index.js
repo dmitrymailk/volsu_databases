@@ -34,24 +34,72 @@ router.post("/", async (req, res) => {
     user_admin, 
     user_read, 
     user_write
-  )
-  VALUES(
+  ) VALUES(
     '${user_name}', 
     '${user_hash}', 
-    ${user_credit},
+    '${user_credit}',
     '${user_phone}', 
     '${user_email}', 
-    ${user_admin}, 
-    ${user_read}, 
-    ${user_write}
+    '${user_admin}', 
+    '${user_read}', 
+    '${user_write}'
   );
   `;
-  SQL_script = SQL_script.replaceAll("\n", "");
   try {
     await connection.query(SQL_script);
     res.sendStatus(200);
   } catch (e) {
     console.log(e);
+    res.sendStatus(500);
+  }
+});
+
+router.put("/user/:user_id", async (req, res) => {
+  const userId = req.params.user_id;
+
+  const user_admin = req.body.user_admin;
+  const user_credit = req.body.user_credit;
+  const user_email = req.body.user_email;
+  const user_name = req.body.user_name;
+  const user_phone = req.body.user_phone;
+  const user_read = req.body.user_read;
+  const user_write = req.body.user_write;
+  const user_hash = "dumb_hash";
+
+  let SQL_script = `
+  UPDATE mydb.user 
+  SET 
+  user_name='${user_name}', 
+  user_hash='${user_hash}', 
+  user_credit='${user_credit}', 
+  user_phone='${user_phone}', 
+  user_email='${user_email}', 
+  user_admin='${user_admin}', 
+  user_read='${user_read}', 
+  user_write='${user_write}'
+  
+  WHERE user_id=${userId};
+  `;
+
+  try {
+    await connection.query(SQL_script);
+    res.sendStatus(200);
+  } catch (e) {
+    res.sendStatus(500);
+  }
+});
+
+router.delete("/user/:user_id", async (req, res) => {
+  const userId = req.params.user_id;
+  const SQL_script = `
+  DELETE FROM mydb.user WHERE user_id=${userId};
+  `;
+  console.log("delete user ", userId);
+
+  try {
+    await connection.query(SQL_script);
+    res.sendStatus(200);
+  } catch (e) {
     res.sendStatus(500);
   }
 });
