@@ -10,10 +10,6 @@
         </tr>
       </thead>
       <tbody>
-        <!-- <tr v-for="(user, index) in usersData">
-          <th scope="row">{{ index }}</th>
-          <td v-for="colData in user">{{ colData }}</td>
-        </tr> -->
         <UserItem
           :userObject="user"
           :usersCols="usersCols"
