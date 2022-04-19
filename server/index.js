@@ -4,6 +4,7 @@ import bodyParser from "body-parser";
 
 import usersRouter from "./routes/users/index.js";
 import productsRouter from "./routes/products/index.js";
+import obligationsRouter from "./routes/obligation/index.js";
 
 const main = async () => {
   const app = express();
@@ -15,6 +16,7 @@ const main = async () => {
   // api part
   app.use("/api/v1/users", usersRouter);
   app.use("/api/v1/products", productsRouter);
+  app.use("/api/v1/obligations", obligationsRouter);
 
   app.listen(port, () => {
     console.log(`Example app listening on port ${port}`);

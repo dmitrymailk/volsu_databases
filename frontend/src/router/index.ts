@@ -3,6 +3,7 @@ import Home from "../components/Home.vue";
 
 import Users from "../components/Users/Users.vue";
 import Product from "../components/Product/Product.vue";
+import Obligation from "../components/Obligation/Obligation.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -17,6 +18,10 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/products",
     component: Product,
+  },
+  {
+    path: "/obligations",
+    component: Obligation,
   },
 ];
 

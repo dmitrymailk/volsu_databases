@@ -7,6 +7,9 @@
       <router-link class="list-group-item text-center w-25" to="/products"
         >Product</router-link
       >
+      <router-link class="list-group-item text-center w-25" to="/obligations"
+        >Obligations</router-link
+      >
     </ul>
   </div>
 </template>
