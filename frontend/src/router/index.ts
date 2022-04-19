@@ -4,6 +4,7 @@ import Home from "../components/Home.vue";
 import Users from "../components/Users/Users.vue";
 import Product from "../components/Product/Product.vue";
 import Obligation from "../components/Obligation/Obligation.vue";
+import Bill from "../components/Bill/Bill.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -22,6 +23,10 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/obligations",
     component: Obligation,
+  },
+  {
+    path: "/bills",
+    component: Bill,
   },
 ];
 
