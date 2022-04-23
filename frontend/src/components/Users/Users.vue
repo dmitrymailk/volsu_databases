@@ -1,6 +1,36 @@
 <template>
   <div class="container">
     <h1>{{ name }}</h1>
+    <div class="container">
+      <form class="form-inline my-2 search">
+        <input
+          class="form-control mr-sm-2"
+          type="search"
+          placeholder="Search"
+          aria-label="Search"
+          v-model="searchPhrase"
+        />
+        <button
+          class="btn btn-outline-success my-2 my-sm-0"
+          @click="searchItems"
+        >
+          Search
+        </button>
+      </form>
+      <ul class="list-group">
+        <li class="list-group-item" v-for="searchField in allowedFields">
+          <div class="form-check form-switch">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              role="switch"
+              @change="() => setSearchFields(searchField)"
+            />
+            <label class="form-check-label">{{ searchField }}</label>
+          </div>
+        </li>
+      </ul>
+    </div>
     <table class="table">
       <thead>
         <tr>
@@ -14,7 +44,7 @@
           :userObject="user"
           :usersCols="usersCols"
           :user_index="index"
-          :getUsers="getUsers"
+          :getItems="getItems"
           v-for="(user, index) in usersData"
         />
 
@@ -82,6 +112,8 @@ export default {
       ],
       displayMessages: [],
       newUser: {},
+      searchFields: {},
+      searchPhrase: "",
     };
   },
   components: {
@@ -95,25 +127,20 @@ export default {
       const value = String(e.target.value);
       this.newUser[colData] = value;
     },
-    async getUsers() {
+    async getItems() {
       this.usersData = [];
       let users = await axios.get("http://localhost:5000/api/v1/users/");
       users = users.data;
       const usersCols = Object.keys(users[0]);
       for (let item of usersCols) {
         this.newUser[item] = "";
+        this.searchFields[item] = false;
       }
       this.usersCols = usersCols;
 
-      // for (let user of users) {
-      //   let item = [];
-      //   for (let col of usersCols) {
-      //     item.push(user[col]);
-      //   }
-      //   this.usersData.push(item);
-      // }
       this.usersData = users;
     },
+
     async addItem() {
       this.displayMessages = [];
       console.log("add item");
@@ -206,20 +233,46 @@ export default {
             type: "success",
             text: "User successfully added",
           });
-          this.getUsers();
+          this.getItems();
         } catch (e) {
           console.error(e);
         }
       }
     },
+    async searchItems(e) {
+      e.preventDefault();
+      console.log("search");
+      try {
+        const searchFields = this.searchFields;
+        const searchPhrase = this.searchPhrase;
+        let newItems = await axios.post(
+          "http://localhost:5000/api/v1/users/search/",
+          {
+            searchFields,
+            searchPhrase,
+          }
+        );
+        newItems = newItems.data;
+
+        this.usersData = newItems;
+      } catch (e) {
+        console.log(e);
+      }
+    },
+    setSearchFields(searchField) {
+      this.searchFields[searchField] = !this.searchFields[searchField];
+    },
   },
   async mounted() {
-    await this.getUsers();
+    await this.getItems();
   },
 };
 </script>
 
 <style lang="sass">
+.search
+	display: flex
+
 .input-table
 	width: 100%
 </style>

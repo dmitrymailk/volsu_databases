@@ -54,6 +54,36 @@ router.post("/", async (req, res) => {
   }
 });
 
+router.post("/search/", async (req, res) => {
+  try {
+    console.log(req.body);
+    const searchFields = req.body.searchFields;
+    const searchPhrase = req.body.searchPhrase;
+    const likeSearch = (field, phrase) => `${field} LIKE '%${phrase}%'`;
+    let SQL_script = "SELECT * from user WHERE ";
+    let searchFieldsKeys = [];
+    for (let item of Object.keys(searchFields))
+      if (searchFields[item]) searchFieldsKeys.push(item);
+    if (searchFieldsKeys.length > 0) {
+      searchFieldsKeys.forEach((item, index) => {
+        if (index < searchFieldsKeys.length - 1) {
+          SQL_script += `${likeSearch(item, searchPhrase)} OR `;
+        } else {
+          SQL_script += `${likeSearch(item, searchPhrase)};`;
+        }
+      });
+    } else {
+      SQL_script = "select * from user;";
+    }
+    // console.log(SQL_script);
+    const [rows, fields] = await connection.execute(SQL_script);
+    res.json(rows);
+  } catch (e) {
+    console.log(e);
+    res.sendStatus(500);
+  }
+});
+
 router.put("/user/:user_id", async (req, res) => {
   const userId = req.params.user_id;
 

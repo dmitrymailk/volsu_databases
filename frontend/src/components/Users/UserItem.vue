@@ -20,7 +20,7 @@
 import axios from "axios";
 
 export default {
-  props: ["usersCols", "userObject", "user_index", "getUsers"],
+  props: ["usersCols", "userObject", "user_index", "getItems"],
   data() {
     return {
       newUserObject: {},
@@ -53,7 +53,7 @@ export default {
           this.newUserObject
         );
         console.log("user updated");
-        this.getUsers();
+        this.getItems();
       } catch (e) {
         console.log(e);
       }
@@ -63,7 +63,7 @@ export default {
         const userId = this.newUserObject["user_id"];
         await axios.delete(`http://localhost:5000/api/v1/users/user/${userId}`);
         console.log("delete user");
-        this.getUsers();
+        this.getItems();
       } catch (e) {
         console.log(e);
       }
