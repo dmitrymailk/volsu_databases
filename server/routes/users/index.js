@@ -6,9 +6,7 @@ router.get("/", async (req, res) => {
   try {
     const field = req.query.field;
     const sortType = req.query.sortType;
-    console.log(field, sortType);
     if (field && sortType) {
-      console.log("sort");
       const [rows, fields] = await connection.execute(
         `SELECT * from user ORDER BY ${field} ${sortType}`
       );
