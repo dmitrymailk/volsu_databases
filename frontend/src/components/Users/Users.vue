@@ -1,6 +1,7 @@
 <template>
   <div class="container">
     <h1>{{ name }}</h1>
+    <h3>Search elements</h3>
     <div class="container">
       <form class="form-inline my-2 search">
         <input
@@ -11,13 +12,13 @@
           v-model="searchPhrase"
         />
         <button
-          class="btn btn-outline-success my-2 my-sm-0"
+          class="btn btn-outline-success my-2 my-sm-0 mx-3"
           @click="searchItems"
         >
           Search
         </button>
       </form>
-      <ul class="list-group">
+      <ul class="list-group list-group-horizontal">
         <li class="list-group-item" v-for="searchField in allowedFields">
           <div class="form-check form-switch">
             <input
@@ -30,6 +31,32 @@
           </div>
         </li>
       </ul>
+    </div>
+    <h3 class="my-3">Sort elements</h3>
+    <div class="container">
+      <ul class="list-group list-group-horizontal">
+        <li class="list-group-item" v-for="sortField in allowedFields">
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="flexRadioDefault"
+              @click="() => setSortField(sortField)"
+            />
+            <label class="form-check-label">
+              {{ sortField }}
+            </label>
+          </div>
+        </li>
+      </ul>
+      <div class="form-check form-switch my-3">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          @change="setSortOrder"
+        />
+        <label class="form-check-label">Descending order</label>
+      </div>
     </div>
     <table class="table">
       <thead>
@@ -114,6 +141,8 @@ export default {
       newUser: {},
       searchFields: {},
       searchPhrase: "",
+      sortField: "",
+      descendingOrder: false,
     };
   },
   components: {
@@ -261,6 +290,31 @@ export default {
     },
     setSearchFields(searchField) {
       this.searchFields[searchField] = !this.searchFields[searchField];
+    },
+    async sortElements() {
+      console.log("sort");
+      if (this.sortField) {
+        try {
+          const sortField = this.sortField;
+          const sortType = !this.descendingOrder ? "ASC" : "DESC";
+          let items = await axios.get(
+            `http://localhost:5000/api/v1/users/?field=${sortField}&sortType=${sortType}`
+          );
+          items = items.data;
+          console.log(items);
+          this.usersData = items;
+        } catch (e) {
+          console.log(e);
+        }
+      }
+    },
+    setSortOrder() {
+      this.descendingOrder = !this.descendingOrder;
+      this.sortElements();
+    },
+    setSortField(field) {
+      this.sortField = field;
+      this.sortElements();
     },
   },
   async mounted() {

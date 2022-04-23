@@ -4,8 +4,20 @@ const router = Router();
 
 router.get("/", async (req, res) => {
   try {
-    const [rows, fields] = await connection.execute("select * from user");
-    res.json(rows);
+    const field = req.query.field;
+    const sortType = req.query.sortType;
+    console.log(field, sortType);
+    if (field && sortType) {
+      console.log("sort");
+      const [rows, fields] = await connection.execute(
+        `SELECT * from user ORDER BY ${field} ${sortType}`
+      );
+
+      res.json(rows);
+    } else {
+      const [rows, fields] = await connection.execute("select * from user");
+      res.json(rows);
+    }
     // console.log("send all users", fields);
   } catch (e) {
     console.log(e);
@@ -64,6 +76,7 @@ router.post("/search/", async (req, res) => {
     let searchFieldsKeys = [];
     for (let item of Object.keys(searchFields))
       if (searchFields[item]) searchFieldsKeys.push(item);
+
     if (searchFieldsKeys.length > 0) {
       searchFieldsKeys.forEach((item, index) => {
         if (index < searchFieldsKeys.length - 1) {
