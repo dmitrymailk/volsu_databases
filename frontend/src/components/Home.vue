@@ -13,6 +13,9 @@
       <router-link class="list-group-item text-center w-25" to="/bills"
         >Bills</router-link
       >
+      <router-link class="list-group-item text-center w-25" to="/experiment/"
+        >Experiment</router-link
+      >
     </ul>
   </div>
 </template>
