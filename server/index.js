@@ -20,7 +20,7 @@ const main = async () => {
   app.use("/api/v1/products", productsRouter);
   app.use("/api/v1/obligations", obligationsRouter);
   app.use("/api/v1/bills", billsRouter);
-  app.use("/api/experiment", experimentRouter);
+  app.use("/api/v1/experiment", experimentRouter);
 
   app.listen(port, () => {
     console.log(`Example app listening on port ${port}`);
