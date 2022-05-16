@@ -130,6 +130,31 @@ router.put("/user/:user_id", async (req, res) => {
   }
 });
 
+router.post("/sort/", async (req, res) => {
+  try {
+    const sortField = req.body.sortFields;
+    let SQL_script = "select * from user ";
+    const getSortType = (type) => (type ? "ASC" : "DESC");
+    let i = 0;
+    for (let key of Object.keys(sortField)) {
+      if (sortField[key]["is_sort"]) {
+        const sortType = getSortType(sortField[key]["asc"]);
+        if (i == 0) {
+          SQL_script += `ORDER BY ${key} ${sortType} `;
+          i += 1;
+        } else SQL_script += `,${key} ${sortType}`;
+      }
+    }
+    SQL_script += ";";
+    console.log(SQL_script);
+    const [rows, fields] = await connection.execute(SQL_script);
+
+    res.json(rows);
+  } catch (e) {
+    console.log(e);
+  }
+});
+
 router.delete("/user/:user_id", async (req, res) => {
   const userId = req.params.user_id;
   const SQL_script = `

@@ -12,6 +12,16 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/bill/:obligation_bill", async (req, res) => {
+  try {
+    const obligation_bill = req.params.obligation_bill;
+    const [rows, fields] = await connection.execute(`select bill from bill;`);
+    res.json(rows);
+  } catch (e) {
+    console.log(e);
+  }
+});
+
 router.post("/", async (req, res) => {
   // console.log(req.body);
   const obligation_bill = req.body.obligation_bill;

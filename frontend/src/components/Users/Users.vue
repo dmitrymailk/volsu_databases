@@ -36,16 +36,25 @@
     <div class="container">
       <ul class="list-group list-group-horizontal">
         <li class="list-group-item" v-for="sortField in allowedFields">
-          <div class="form-check">
+          <div class="form-check form-switch">
             <input
               class="form-check-input"
-              type="radio"
+              type="checkbox"
               name="flexRadioDefault"
-              @click="() => setSortField(sortField)"
+              @click="() => setSortField(sortField, 0)"
             />
             <label class="form-check-label">
               {{ sortField }}
             </label>
+          </div>
+          <div class="form-check form-switch">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              name="flexRadioDefault1"
+              @click="() => setSortField(sortField, 1)"
+            />
+            <label class="form-check-label"> ASC </label>
           </div>
         </li>
       </ul>
@@ -53,6 +62,7 @@
         <input
           class="form-check-input"
           type="checkbox"
+          role="switch"
           @change="setSortOrder"
         />
         <label class="form-check-label">Descending order</label>
@@ -141,7 +151,7 @@ export default {
       newUser: {},
       searchFields: {},
       searchPhrase: "",
-      sortField: "",
+      sortFields: {},
       descendingOrder: false,
     };
   },
@@ -164,6 +174,10 @@ export default {
       for (let item of usersCols) {
         this.newUser[item] = "";
         this.searchFields[item] = false;
+        this.sortFields[item] = {
+          is_sort: false,
+          asc: false,
+        };
       }
       this.usersCols = usersCols;
 
@@ -293,27 +307,27 @@ export default {
     },
     async sortElements() {
       console.log("sort");
-      if (this.sortField) {
-        try {
-          const sortField = this.sortField;
-          const sortType = !this.descendingOrder ? "ASC" : "DESC";
-          let items = await axios.get(
-            `http://localhost:5000/api/v1/users/?field=${sortField}&sortType=${sortType}`
-          );
-          items = items.data;
-          console.log(items);
-          this.usersData = items;
-        } catch (e) {
-          console.log(e);
-        }
+      try {
+        const sortFields = this.sortFields;
+        const sortedElems = await axios.post(
+          "http://localhost:5000/api/v1/users/sort/",
+          {
+            sortFields,
+          }
+        );
+        this.usersData = sortedElems.data;
+      } catch (e) {
+        console.log(e);
       }
     },
     setSortOrder() {
       this.descendingOrder = !this.descendingOrder;
       this.sortElements();
     },
-    setSortField(field) {
-      this.sortField = field;
+    setSortField(field, num) {
+      if (num == 0)
+        this.sortFields[field]["is_sort"] = !this.sortFields[field]["is_sort"];
+      else this.sortFields[field]["asc"] = !this.sortFields[field]["asc"];
       this.sortElements();
     },
   },
