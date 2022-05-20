@@ -4,9 +4,42 @@ const router = Router();
 
 router.get("/", async (req, res) => {
   try {
-    const [rows, fields] = await connection.execute("select * from bill");
+    const SQL_script = `
+    SELECT 
+      bill_id, 
+      bill_user, 
+      bill_sum, 
+      user_name 
+    FROM 
+      bill 
+    INNER JOIN 
+      user 
+    ON 
+      bill.bill_user = user.user_id;
+    `;
+    const [rows, fields] = await connection.execute(SQL_script);
     res.json(rows);
     // console.log("send all users", fields);
+  } catch (e) {
+    console.log(e);
+  }
+});
+
+router.get("/user_bills/", async (req, res) => {
+  // let SQL_script = `
+  // SELECT DISTINCT bill_user, user_name from bill
+  // INNER JOIN
+  //   user
+  // ON
+  //   bill.bill_user = user.user_id
+  // ;
+  // `;
+  try {
+    let SQL_script = `
+    SELECT user_name, user_id from user;
+    `;
+    const [rows, fields] = await connection.execute(SQL_script);
+    res.json(rows);
   } catch (e) {
     console.log(e);
   }

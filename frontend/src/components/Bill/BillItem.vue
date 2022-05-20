@@ -1,12 +1,21 @@
 <template>
   <tr>
     <th scope="row">{{ item_index }}</th>
-    <td v-for="item in itemObjectList">
+    <td v-for="(item, index) in itemObjectList">
       <input
+        v-if="item['field'] != 'bill_user'"
         type="text"
         class="input-table"
         :value="item.data"
         @input="(e) => changeField(e, item.field)"
+      />
+      <MySelect
+        v-else-if="item['field'] == 'bill_user'"
+        :selectCallback="userBillOptionsSelect.bind(this)"
+        :dataCallback="userBillOptionsSelectDataCallback.bind(this)"
+        :defaultDisplayName="userBillOptionsSelectDefaultName"
+        :defaultOption="item"
+        :displayFormatFunction="userBillOptionsSelectFormatFunction"
       />
     </td>
     <td class="table-controls">
@@ -17,12 +26,17 @@
 </template>
 <script>
 import axios from "axios";
+import MySelect from "./MySelect.vue";
 
 export default {
+  components: {
+    MySelect,
+  },
   props: ["itemsCols", "itemObject", "item_index", "getItems"],
   data() {
     return {
       newItemObject: {},
+      userBillOptions: [],
     };
   },
   computed: {
@@ -34,8 +48,33 @@ export default {
         };
       });
     },
+    userBillOptionsSelectDefaultName() {
+      // console.log(this.newItemObject, "test");
+      return `${this.itemObject["bill_user"]} - ${this.itemObject["user_name"]}`;
+    },
   },
+
   methods: {
+    userBillOptionsSelect(option) {
+      console.log(option);
+      this.newItemObject["bill_user"] = option["user_id"];
+    },
+    userBillOptionsSelectFormatFunction(option) {
+      if (option["user_id"])
+        return `${option["user_id"]} - ${option["user_name"]}`;
+      else return `${option["bill_user"]} - ${option["user_name"]}`;
+    },
+    async userBillOptionsSelectDataCallback() {
+      try {
+        let result = await axios.get(
+          `http://localhost:5000/api/v1/bills/user_bills/`
+        );
+
+        return result.data;
+      } catch (e) {
+        console.error(e);
+      }
+    },
     changeField(e, fieldType) {
       const value = e.srcElement.value;
       // console.log(value);
@@ -70,7 +109,13 @@ export default {
   },
   mounted() {
     // console.log(this.userObject);
-    this.newItemObject = this.itemObject;
+    //  = this.itemObject
+    let newObj = {};
+    for (let col of this.itemsCols) {
+      newObj[col] = this.itemObject[col];
+    }
+    // const userBillOption = this.itemObject['bill_user']
+    this.newItemObject = newObj;
   },
 };
 </script>

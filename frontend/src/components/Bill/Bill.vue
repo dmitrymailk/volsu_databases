@@ -5,14 +5,14 @@
       <thead>
         <tr>
           <th scope="col">#</th>
-          <th scope="col" v-for="col in itemsCols">{{ col }}</th>
+          <th scope="col" v-for="col in showedFields">{{ col }}</th>
           <th>Controls</th>
         </tr>
       </thead>
       <tbody>
         <BillItem
           :itemObject="item"
-          :itemsCols="itemsCols"
+          :itemsCols="showedFields"
           :item_index="index"
           :getItems="getItems"
           v-for="(item, index) in itemsData"
@@ -73,6 +73,7 @@ export default {
       itemsData: [],
       itemsCols: [],
       allowedFields: ["bill_user", "bill_sum"],
+      showedFields: ["bill_id", "bill_user", "bill_sum"],
       displayMessages: [],
       newItem: {},
     };
