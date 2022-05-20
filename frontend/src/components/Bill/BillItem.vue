@@ -32,7 +32,7 @@ export default {
   components: {
     MySelect,
   },
-  props: ["itemsCols", "itemObject", "item_index", "getItems"],
+  props: ["itemsCols", "itemObject", "item_index", "getItems", "serverFields"],
   data() {
     return {
       newItemObject: {},
@@ -50,7 +50,7 @@ export default {
     },
     userBillOptionsSelectDefaultName() {
       // console.log(this.newItemObject, "test");
-      return `${this.itemObject["bill_user"]} - ${this.itemObject["user_name"]}`;
+      return `${this.itemObject["user_name"]}`;
     },
   },
 
@@ -60,9 +60,8 @@ export default {
       this.newItemObject["bill_user"] = option["user_id"];
     },
     userBillOptionsSelectFormatFunction(option) {
-      if (option["user_id"])
-        return `${option["user_id"]} - ${option["user_name"]}`;
-      else return `${option["bill_user"]} - ${option["user_name"]}`;
+      if (option["user_id"]) return `${option["user_name"]}`;
+      else return `${option["user_name"]}`;
     },
     async userBillOptionsSelectDataCallback() {
       try {
@@ -111,7 +110,7 @@ export default {
     // console.log(this.userObject);
     //  = this.itemObject
     let newObj = {};
-    for (let col of this.itemsCols) {
+    for (let col of this.serverFields) {
       newObj[col] = this.itemObject[col];
     }
     // const userBillOption = this.itemObject['bill_user']

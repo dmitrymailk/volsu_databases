@@ -15,18 +15,27 @@
           :itemsCols="showedFields"
           :item_index="index"
           :getItems="getItems"
+          :serverFields="serverFields"
           v-for="(item, index) in itemsData"
         />
 
         <!-- add new item -->
         <tr>
           <th scope="row">{{ itemsData.length }}</th>
-          <td v-for="(colData, index) in itemsCols">
+          <td v-for="(colData, index) in showedFields">
             <input
-              v-if="isFieldWritable(colData)"
+              v-if="isFieldWritable(colData) && colData != 'bill_user'"
               type="text"
               class="input-table"
               @input="(e) => changenewItemField(e, colData)"
+            />
+            <MySelect
+              v-else-if="isFieldWritable(colData) && colData == 'bill_user'"
+              :selectCallback="newUserBillOptionsSelect.bind(this)"
+              :dataCallback="newUserBillOptionsSelectDataCallback.bind(this)"
+              :defaultDisplayName="newUserBillOptionsSelectDefaultName"
+              :defaultOption="{}"
+              :displayFormatFunction="newUserBillOptionsSelectFormatFunction"
             />
           </td>
         </tr>
@@ -65,6 +74,7 @@
 <script>
 import BillItem from "./BillItem.vue";
 import axios from "axios";
+import MySelect from "./MySelect.vue";
 
 export default {
   data() {
@@ -73,15 +83,44 @@ export default {
       itemsData: [],
       itemsCols: [],
       allowedFields: ["bill_user", "bill_sum"],
-      showedFields: ["bill_id", "bill_user", "bill_sum"],
+      showedFields: ["bill_user", "bill_sum"],
+      serverFields: ["bill_id", "bill_user", "bill_sum"],
       displayMessages: [],
-      newItem: {},
+      newItem: {
+        user_name: "",
+      },
     };
   },
   components: {
     BillItem,
+    MySelect,
+  },
+  computed: {
+    newUserBillOptionsSelectDefaultName() {
+      return `${this.newItem["user_name"]}`;
+    },
   },
   methods: {
+    newUserBillOptionsSelect(option) {
+      console.log(option);
+      this.newItem["bill_user"] = option["user_id"];
+      this.newItem["user_name"] = option["user_name"];
+    },
+    async newUserBillOptionsSelectDataCallback() {
+      try {
+        let result = await axios.get(
+          `http://localhost:5000/api/v1/bills/user_bills/`
+        );
+
+        return result.data;
+      } catch (e) {
+        console.error(e);
+      }
+    },
+    newUserBillOptionsSelectFormatFunction(option) {
+      if (option["user_id"]) return `${option["user_name"]}`;
+      else return `${option["user_name"]}`;
+    },
     isFieldWritable(field_name) {
       return this.allowedFields.includes(field_name);
     },
