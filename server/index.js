@@ -13,7 +13,7 @@ import experimentRouter from "./routes/experiment/index.js";
 import login from "./routes/auth/login.js";
 import register from "./routes/auth/register.js";
 
-import verifyToken from "./routes/auth/jwt.js";
+import { verifyToken, isAdmin } from "./routes/auth/jwt.js";
 
 const main = async () => {
   const app = express();
@@ -23,7 +23,7 @@ const main = async () => {
   app.use(bodyParser.json());
   // app.use(verifyToken);
   // api part
-  app.use("/api/v1/users", verifyToken, usersRouter);
+  app.use("/api/v1/users", verifyToken, isAdmin, usersRouter);
   app.use("/api/v1/products", verifyToken, productsRouter);
   app.use("/api/v1/obligations", verifyToken, obligationsRouter);
   app.use("/api/v1/bills", verifyToken, billsRouter);
