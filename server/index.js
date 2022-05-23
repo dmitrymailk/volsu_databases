@@ -13,19 +13,21 @@ import experimentRouter from "./routes/experiment/index.js";
 import login from "./routes/auth/login.js";
 import register from "./routes/auth/register.js";
 
+import verifyToken from "./routes/auth/jwt.js";
+
 const main = async () => {
   const app = express();
   const port = 5000;
 
   app.use(cors());
   app.use(bodyParser.json());
-
+  // app.use(verifyToken);
   // api part
-  app.use("/api/v1/users", usersRouter);
-  app.use("/api/v1/products", productsRouter);
-  app.use("/api/v1/obligations", obligationsRouter);
-  app.use("/api/v1/bills", billsRouter);
-  app.use("/api/v1/experiment", experimentRouter);
+  app.use("/api/v1/users", verifyToken, usersRouter);
+  app.use("/api/v1/products", verifyToken, productsRouter);
+  app.use("/api/v1/obligations", verifyToken, obligationsRouter);
+  app.use("/api/v1/bills", verifyToken, billsRouter);
+  app.use("/api/v1/experiment", verifyToken, experimentRouter);
 
   app.use("/api/v1/", login);
   app.use("/api/v1/", register);
