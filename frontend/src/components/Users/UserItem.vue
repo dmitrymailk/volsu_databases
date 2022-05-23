@@ -7,6 +7,7 @@
         class="input-table"
         :value="item.data"
         @input="(e) => changeField(e, item.field)"
+        v-if="isFieldWritable(item.field)"
       />
     </td>
     <td class="table-controls">
@@ -20,7 +21,7 @@
 import axios from "axios";
 
 export default {
-  props: ["usersCols", "userObject", "user_index", "getItems"],
+  props: ["usersCols", "userObject", "user_index", "getItems", "allowedFields"],
   data() {
     return {
       newUserObject: {},
@@ -42,6 +43,9 @@ export default {
       // console.log(value);
       this.newUserObject[fieldType] = value;
       // console.log(this.newUserObject);
+    },
+    isFieldWritable(field_name) {
+      return this.allowedFields.includes(field_name);
     },
     async updateUser() {
       try {

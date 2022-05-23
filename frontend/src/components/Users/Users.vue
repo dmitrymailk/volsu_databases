@@ -82,6 +82,7 @@
           :usersCols="usersCols"
           :user_index="index"
           :getItems="getItems"
+          :allowedFields="allowedFields"
           v-for="(user, index) in usersData"
         />
 
