@@ -16,6 +16,12 @@
       <router-link class="list-group-item text-center w-25" to="/experiment/"
         >Experiment</router-link
       >
+      <router-link class="list-group-item text-center w-25" to="/login/"
+        >Login</router-link
+      >
+      <router-link class="list-group-item text-center w-25" to="/register/"
+        >Register</router-link
+      >
     </ul>
   </div>
 </template>

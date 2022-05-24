@@ -62,6 +62,7 @@ router.post("/register", async (req, res) => {
     const user = {
       token,
       user_email,
+      status: "User succesfuly registered.",
     };
     res.status(201).json(user);
   } catch (e) {
