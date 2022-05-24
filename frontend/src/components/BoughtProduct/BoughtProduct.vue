@@ -64,7 +64,7 @@
 
 <script>
 import BillItem from "./BillItem.vue";
-import axios from "axios";
+import { apiServer } from "../../utils/apiServer";
 
 export default {
   data() {
@@ -90,7 +90,7 @@ export default {
     },
     async getItems() {
       this.itemsData = [];
-      let items = await axios.get("http://localhost:5000/api/v1/bills/");
+      let items = await apiServer.get("bills/");
       console.log(items);
       items = items.data;
       const itemsCols = Object.keys(items[0]);
@@ -137,7 +137,7 @@ export default {
         };
 
         try {
-          await axios.post("http://localhost:5000/api/v1/bills/", itemData);
+          await apiServer.post("bills/", itemData);
           this.displayMessages.push({
             type: "success",
             text: "Bill successfully added",

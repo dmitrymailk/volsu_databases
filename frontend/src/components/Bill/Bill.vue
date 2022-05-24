@@ -73,8 +73,8 @@
 
 <script>
 import BillItem from "./BillItem.vue";
-import axios from "axios";
 import MySelect from "./MySelect.vue";
+import { apiServer } from "../../utils/apiServer";
 
 export default {
   data() {
@@ -108,9 +108,7 @@ export default {
     },
     async newUserBillOptionsSelectDataCallback() {
       try {
-        let result = await axios.get(
-          `http://localhost:5000/api/v1/bills/user_bills/`
-        );
+        let result = await apiServer.get(`bills/user_bills/`);
 
         return result.data;
       } catch (e) {
@@ -130,7 +128,7 @@ export default {
     },
     async getItems() {
       this.itemsData = [];
-      let items = await axios.get("http://localhost:5000/api/v1/bills/");
+      let items = await apiServer.get("bills/");
       console.log(items);
       items = items.data;
       const itemsCols = Object.keys(items[0]);
@@ -177,7 +175,7 @@ export default {
         };
 
         try {
-          await axios.post("http://localhost:5000/api/v1/bills/", itemData);
+          await apiServer.post("bills/", itemData);
           this.displayMessages.push({
             type: "success",
             text: "Bill successfully added",

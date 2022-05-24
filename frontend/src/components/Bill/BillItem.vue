@@ -25,8 +25,8 @@
   </tr>
 </template>
 <script>
-import axios from "axios";
 import MySelect from "./MySelect.vue";
+import { apiServer } from "../../utils/apiServer";
 
 export default {
   components: {
@@ -65,9 +65,7 @@ export default {
     },
     async userBillOptionsSelectDataCallback() {
       try {
-        let result = await axios.get(
-          `http://localhost:5000/api/v1/bills/user_bills/`
-        );
+        let result = await apiServer.get(`bills/user_bills/`);
 
         return result.data;
       } catch (e) {
@@ -85,10 +83,7 @@ export default {
         // console.log(object);
         const itemId = this.newItemObject["bill_id"];
         console.log(itemId, this.newItemObject);
-        await axios.put(
-          `http://localhost:5000/api/v1/bills/bill/${itemId}`,
-          this.newItemObject
-        );
+        await apiServer.put(`bills/bill/${itemId}`, this.newItemObject);
         console.log("bill updated");
         this.getItems();
       } catch (e) {
@@ -98,7 +93,7 @@ export default {
     async deleteItem() {
       try {
         const itemId = this.newItemObject["bill_id"];
-        await axios.delete(`http://localhost:5000/api/v1/bills/bill/${itemId}`);
+        await apiServer.delete(`bills/bill/${itemId}`);
         console.log("delete bill");
         this.getItems();
       } catch (e) {

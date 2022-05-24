@@ -27,7 +27,7 @@ const main = async () => {
   app.use("/api/v1/products", verifyToken, productsRouter);
   app.use("/api/v1/obligations", verifyToken, obligationsRouter);
   app.use("/api/v1/bills", verifyToken, billsRouter);
-  app.use("/api/v1/experiment", verifyToken, experimentRouter);
+  app.use("/api/v1/experiment", verifyToken, isAdmin, experimentRouter);
 
   app.use("/api/v1/", login);
   app.use("/api/v1/", register);

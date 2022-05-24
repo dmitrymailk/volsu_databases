@@ -64,7 +64,7 @@
 
 <script>
 import ObligationItem from "./ObligationItem.vue";
-import axios from "axios";
+import { apiServer } from "../../utils/apiServer";
 
 export default {
   data() {
@@ -90,7 +90,7 @@ export default {
     },
     async getItems() {
       this.itemsData = [];
-      let items = await axios.get("http://localhost:5000/api/v1/obligations/");
+      let items = await apiServer.get("obligations/");
       console.log(items);
       items = items.data;
       const itemsCols = Object.keys(items[0]);
@@ -138,10 +138,7 @@ export default {
         };
 
         try {
-          await axios.post(
-            "http://localhost:5000/api/v1/obligations/",
-            itemData
-          );
+          await apiServer.post("obligations/", itemData);
           this.displayMessages.push({
             type: "success",
             text: "Product successfully added",

@@ -36,6 +36,7 @@
 
 <script>
 import axios from "axios";
+import { apiServer } from "../../utils/apiServer";
 
 export default {
   data() {
@@ -62,12 +63,9 @@ export default {
       console.log("execute", this.sqlScript);
       const SQL_script = this.sqlScript;
       try {
-        let items = await axios.post(
-          "http://localhost:5000/api/v1/experiment/",
-          {
-            SQL_script,
-          }
-        );
+        let items = await apiServer.post("experiment/", {
+          SQL_script,
+        });
         console.log(items);
         items = items.data;
         const itemsCols = Object.keys(items[0]);

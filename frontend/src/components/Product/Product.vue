@@ -64,7 +64,8 @@
 
 <script>
 import ProductItem from "./ProductItem.vue";
-import axios from "axios";
+// import axios from "axios";
+import { apiServer } from "../../utils/apiServer";
 
 export default {
   data() {
@@ -95,7 +96,7 @@ export default {
     },
     async getItems() {
       this.itemsData = [];
-      let items = await axios.get("http://localhost:5000/api/v1/products/");
+      let items = await apiServer.get("products/");
       items = items.data;
       const itemsCols = Object.keys(items[0]);
       for (let item of itemsCols) {
@@ -161,7 +162,7 @@ export default {
         };
 
         try {
-          await axios.post("http://localhost:5000/api/v1/products/", itemData);
+          await apiServer.post("products/", itemData);
           this.displayMessages.push({
             type: "success",
             text: "Product successfully added",
