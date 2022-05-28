@@ -18,8 +18,8 @@
 </template>
 
 <script>
-import axios from "axios";
-
+// import axios from "axios";
+import { apiServer } from "../../utils/apiServer";
 export default {
   props: ["usersCols", "userObject", "user_index", "getItems", "allowedFields"],
   data() {
@@ -52,10 +52,7 @@ export default {
         // console.log(object);
         const userId = this.newUserObject["user_id"];
         console.log(userId, this.newUserObject);
-        await axios.put(
-          `http://localhost:5000/api/v1/users/user/${userId}`,
-          this.newUserObject
-        );
+        await apiServer.put(`users/user/${userId}`, this.newUserObject);
         console.log("user updated");
         this.getItems();
       } catch (e) {
@@ -65,7 +62,7 @@ export default {
     async deleteUser() {
       try {
         const userId = this.newUserObject["user_id"];
-        await axios.delete(`http://localhost:5000/api/v1/users/user/${userId}`);
+        await apiServer.delete(`users/user/${userId}`);
         console.log("delete user");
         this.getItems();
       } catch (e) {

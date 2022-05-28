@@ -1,5 +1,6 @@
 import axios from "axios";
 
+import store from "../store/index.js";
 import { getToken, removeToken } from "./jwtUtils";
 
 let apiServer = axios.create({
@@ -7,6 +8,22 @@ let apiServer = axios.create({
 });
 
 apiServer.defaults.headers.common["x-access-token"] = getToken();
+
+apiServer.interceptors.response.use(
+  function (response) {
+    return response;
+  },
+  function (error) {
+    if (401 === error.response.status) {
+      store.dispatch("LOGOUT");
+
+      return Promise.reject(error);
+    } else {
+      return Promise.reject(error);
+    }
+  }
+);
+
 const apiServerSetToken = (token) => {
   apiServer.defaults.headers.common["x-access-token"] = token;
 };

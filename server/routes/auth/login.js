@@ -36,10 +36,10 @@ router.post("/login", async (req, res) => {
 
       user.token = token;
       res.status(200).json(user);
-    }
-    res.status(400).json({
-      status: "Invalid Credentials",
-    });
+    } else
+      res.status(400).json({
+        status: "Invalid Credentials",
+      });
   } catch (e) {
     console.error(e);
   }

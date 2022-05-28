@@ -6,7 +6,7 @@ const config = process.env;
 const verifyToken = (req, res, next) => {
   //   console.log(req, res);
   const token = req.headers["x-access-token"];
-
+  console.log("token", token);
   if (!token) {
     return res.status(403).json({
       status: "A token is required for authentication",
@@ -15,6 +15,7 @@ const verifyToken = (req, res, next) => {
   try {
     const decoded = jwt.verify(token, config.SECRET_JWT);
     req.user = decoded;
+    console.log(decoded);
   } catch (err) {
     return res.status(401).json({
       status: "Invalid Token",

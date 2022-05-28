@@ -16,8 +16,8 @@
   </tr>
 </template>
 <script>
-import axios from "axios";
-
+// import axios from "axios";
+import { apiServer } from "../../utils/apiServer";
 export default {
   props: ["itemsCols", "itemObject", "item_index", "getItems"],
   data() {
@@ -47,10 +47,7 @@ export default {
         // console.log(object);
         const itemId = this.newItemObject["product_id"];
         console.log(itemId, this.newItemObject);
-        await axios.put(
-          `http://localhost:5000/api/v1/products/product/${itemId}`,
-          this.newItemObject
-        );
+        await apiServer.put(`products/product/${itemId}`, this.newItemObject);
         console.log("product updated");
         this.getItems();
       } catch (e) {
@@ -60,9 +57,7 @@ export default {
     async deleteItem() {
       try {
         const itemId = this.newItemObject["product_id"];
-        await axios.delete(
-          `http://localhost:5000/api/v1/products/product/${itemId}`
-        );
+        await apiServer.delete(`products/product/${itemId}`);
         console.log("delete product");
         this.getItems();
       } catch (e) {

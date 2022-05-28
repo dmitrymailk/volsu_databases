@@ -131,7 +131,8 @@
 </template>
 
 <script>
-import axios from "axios";
+// import axios from "axios";
+import { apiServer } from "../../utils/apiServer";
 import UserItem from "./UserItem.vue";
 export default {
   data() {
@@ -169,7 +170,7 @@ export default {
     },
     async getItems() {
       this.usersData = [];
-      let users = await axios.get("http://localhost:5000/api/v1/users/");
+      let users = await apiServer.get("users/");
       users = users.data;
       const usersCols = Object.keys(users[0]);
       for (let item of usersCols) {
@@ -272,7 +273,7 @@ export default {
           user_write,
         };
         try {
-          await axios.post("http://localhost:5000/api/v1/users/", userData);
+          await apiServer.post("users/", userData);
           this.displayMessages.push({
             type: "success",
             text: "User successfully added",
@@ -289,13 +290,10 @@ export default {
       try {
         const searchFields = this.searchFields;
         const searchPhrase = this.searchPhrase;
-        let newItems = await axios.post(
-          "http://localhost:5000/api/v1/users/search/",
-          {
-            searchFields,
-            searchPhrase,
-          }
-        );
+        let newItems = await apiServer.post("users/search/", {
+          searchFields,
+          searchPhrase,
+        });
         newItems = newItems.data;
 
         this.usersData = newItems;
@@ -310,12 +308,9 @@ export default {
       console.log("sort");
       try {
         const sortFields = this.sortFields;
-        const sortedElems = await axios.post(
-          "http://localhost:5000/api/v1/users/sort/",
-          {
-            sortFields,
-          }
-        );
+        const sortedElems = await apiServer.post("users/sort/", {
+          sortFields,
+        });
         this.usersData = sortedElems.data;
       } catch (e) {
         console.log(e);

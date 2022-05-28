@@ -29,8 +29,8 @@
   </tr>
 </template>
 <script>
-import axios from "axios";
-
+// import axios from "axios";
+import { apiServer } from "../../utils/apiServer";
 export default {
   props: ["itemsCols", "itemObject", "item_index", "getItems"],
   data() {
@@ -67,8 +67,8 @@ export default {
         // console.log(object);
         const itemId = this.newItemObject["obligation_id"];
         console.log(itemId, this.newItemObject);
-        await axios.put(
-          `http://localhost:5000/api/v1/obligations/obligation/${itemId}`,
+        await apiServer.put(
+          `obligations/obligation/${itemId}`,
           this.newItemObject
         );
         console.log("obligation updated");
@@ -80,9 +80,7 @@ export default {
     async deleteItem() {
       try {
         const itemId = this.newItemObject["obligation_id"];
-        await axios.delete(
-          `http://localhost:5000/api/v1/obligations/obligation/${itemId}`
-        );
+        await apiServer.delete(`obligations/obligation/${itemId}`);
         console.log("delete obligation");
         this.getItems();
       } catch (e) {
@@ -92,9 +90,7 @@ export default {
     async getObligationBills() {
       try {
         const itemId = this.newItemObject["obligation_id"];
-        let bills = await axios.get(
-          `http://localhost:5000/api/v1/obligations/bill/${itemId}`
-        );
+        let bills = await apiServer.get(`obligations/bill/${itemId}`);
         bills = bills.data;
         console.log(bills);
       } catch (e) {

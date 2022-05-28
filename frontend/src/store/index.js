@@ -18,6 +18,9 @@ export default createStore({
     isAuthenticated(state) {
       return state.isAuthenticated;
     },
+    user(state) {
+      return state.user;
+    },
   },
   mutations: {
     SET_AUTH(state, user) {
@@ -25,6 +28,7 @@ export default createStore({
       state.user = user;
       setToken(user.token);
       apiServerSetToken(user.token);
+      apiServer.defaults.headers.common["x-access-token"] = user.token;
     },
     PURGE_AUTH(state) {
       state.isAuthenticated = false;
@@ -64,21 +68,6 @@ export default createStore({
             reject(response);
           });
       });
-    },
-    CHECK_AUTH(context) {
-      if (getToken()) {
-        apiServer.setHeader();
-        apiServer
-          .get("user")
-          .then(({ data }) => {
-            context.commit("SET_AUTH", data.user);
-          })
-          .catch(({ response }) => {
-            context.commit("SET_ERROR", response.data.errors);
-          });
-      } else {
-        context.commit("PURGE_AUTH");
-      }
     },
   },
   modules: {},
