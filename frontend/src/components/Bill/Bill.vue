@@ -16,6 +16,7 @@
           :item_index="index"
           :getItems="getItems"
           :serverFields="serverFields"
+          :displayMessages="displayMessages"
           v-for="(item, index) in itemsData"
         />
 
@@ -144,6 +145,7 @@ export default {
       console.log("add bill");
       const len = (elem) => elem.length;
       const isBool = (str) => str == "0" || str == "1";
+      const isNegative = (str) => +str < 0;
       let error = false;
 
       let bill_user = this.newItem["bill_user"];
@@ -157,7 +159,7 @@ export default {
         });
       }
 
-      if (isNaN(bill_sum) || len(bill_sum) == 0) {
+      if (isNaN(bill_sum) || len(bill_sum) == 0 || isNegative(bill_sum)) {
         error = true;
         this.displayMessages.push({
           type: "error",

@@ -15,6 +15,8 @@
           :itemsCols="itemsCols"
           :item_index="index"
           :getItems="getItems"
+          :allowedFields="allowedFields"
+          :displayMessages="displayMessages"
           v-for="(item, index) in itemsData"
         />
 
@@ -111,6 +113,7 @@ export default {
       console.log("add item");
       const len = (elem) => elem.length;
       const isBool = (str) => str == "0" || str == "1";
+      const isNegative = (str) => +str < 0;
       let error = false;
 
       let product_name = this.newItem["product_name"];
@@ -126,7 +129,11 @@ export default {
         });
       }
 
-      if (isNaN(product_price) || len(product_price) == 0) {
+      if (
+        isNaN(product_price) ||
+        len(product_price) == 0 ||
+        isNegative(product_price)
+      ) {
         error = true;
         this.displayMessages.push({
           type: "error",

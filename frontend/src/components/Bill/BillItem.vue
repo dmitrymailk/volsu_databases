@@ -32,7 +32,14 @@ export default {
   components: {
     MySelect,
   },
-  props: ["itemsCols", "itemObject", "item_index", "getItems", "serverFields"],
+  props: [
+    "itemsCols",
+    "itemObject",
+    "item_index",
+    "getItems",
+    "serverFields",
+    "displayMessages",
+  ],
   data() {
     return {
       newItemObject: {},
@@ -81,11 +88,40 @@ export default {
     async updateItem() {
       try {
         // console.log(object);
-        const itemId = this.newItemObject["bill_id"];
-        console.log(itemId, this.newItemObject);
-        await apiServer.put(`bills/bill/${itemId}`, this.newItemObject);
-        console.log("bill updated");
-        this.getItems();
+        this.displayMessages.splice(0, this.displayMessages.length);
+        console.log("add bill");
+        const len = (elem) => elem.length;
+        const isBool = (str) => str == "0" || str == "1";
+        const isNegative = (str) => +str < 0;
+        let error = false;
+
+        let bill_user = this.newItemObject["bill_user"];
+        let bill_sum = this.newItemObject["bill_sum"];
+
+        if (len(bill_user) == 0 || isNaN(bill_user)) {
+          error = true;
+          this.displayMessages.push({
+            type: "error",
+            text: "Incorrect bill_user",
+          });
+        }
+
+        if (isNaN(bill_sum) || len(bill_sum) == 0 || isNegative(bill_sum)) {
+          error = true;
+          this.displayMessages.push({
+            type: "error",
+            text: "Incorrect bill_sum",
+          });
+        }
+
+        if (!error) {
+          console.log("send to server");
+          const itemId = this.newItemObject["bill_id"];
+          console.log(itemId, this.newItemObject);
+          await apiServer.put(`bills/bill/${itemId}`, this.newItemObject);
+          console.log("bill updated");
+          this.getItems();
+        }
       } catch (e) {
         console.log(e);
       }

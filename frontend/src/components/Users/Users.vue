@@ -83,6 +83,7 @@
           :user_index="index"
           :getItems="getItems"
           :allowedFields="allowedFields"
+          :displayMessages="displayMessages"
           v-for="(user, index) in usersData"
         />
 
@@ -191,6 +192,7 @@ export default {
       console.log("add item");
       const len = (elem) => elem.length;
       const isBool = (str) => str == "0" || str == "1";
+      const isNegative = (str) => +str < 0;
       let error = false;
 
       let user_credit = this.newUser["user_credit"];
@@ -209,7 +211,11 @@ export default {
         });
       }
 
-      if (isNaN(user_credit) || len(user_credit) == 0) {
+      if (
+        isNaN(user_credit) ||
+        len(user_credit) == 0 ||
+        isNegative(user_phone)
+      ) {
         error = true;
         this.displayMessages.push({
           type: "error",
@@ -217,7 +223,7 @@ export default {
         });
       }
 
-      if (len(user_phone) == 0 || isNaN(user_phone)) {
+      if (len(user_phone) == 0 || isNaN(user_phone) || isNegative(user_phone)) {
         error = true;
         this.displayMessages.push({
           type: "error",
