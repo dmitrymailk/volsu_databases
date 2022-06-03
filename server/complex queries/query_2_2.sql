@@ -11,7 +11,7 @@ INNER JOIN (SELECT
 				(SELECT
 					*, 
 					MONTH(bought_product_time) as month_type,
-					count(bought_product_original) as cnt
+					COUNT(bought_product_original) as cnt
 				from
 					bought_product
 				group by

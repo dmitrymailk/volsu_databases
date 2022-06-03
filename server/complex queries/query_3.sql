@@ -142,3 +142,115 @@ IN
 		GROUP BY table1.bill_user) AS table2
 	WHERE total_items > 3)) as table3
 GROUP BY bill_user) as table4)
+
+
+---
+--- ИТОГОВЫЙ ВАРИАНТ 2
+---
+UPDATE 
+bill 
+SET bill_sum =  bill_sum * CAST(0.9 as decimal(10, 2))
+WHERE bill_user
+IN 
+(SELECT bill_user FROM 
+(SELECT bill_user, COUNT(bought_product_original) AS total_items FROM 
+ 		(SELECT * FROM bought_product 
+ 		INNER JOIN bill 
+		ON
+ 		bought_product_bill = bill.bill_id 
+		WHERE bought_product_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)) as table1
+ 	GROUP BY table1.bill_user) AS table2
+ WHERE total_items > 3) AND bill_id IN (SELECT last_id FROM 
+(SELECT bill_user, MAX(bill_id) AS last_id FROM 
+(SELECT * FROM bill 
+WHERE bill_user 
+IN
+	(SELECT bill_user FROM
+		(SELECT bill_user, COUNT(bought_product_original) as total_buy FROM bought_product
+		INNER JOIN bill
+		ON
+		bought_product_bill = bill.bill_id 
+		WHERE bought_product_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+	GROUP BY bill_user) as table2
+WHERE total_buy > 3)) as table3
+GROUP BY bill_user) as table4)
+
+---
+--- ИТОГОВЫЙ ВАРИАНТ 3
+---
+UPDATE 
+bill 
+SET bill_sum =  bill_sum * CAST(0.9 as decimal(10, 2))
+WHERE bill_user
+IN 
+(SELECT bill_user FROM 
+(SELECT bill_user, COUNT(bought_product_original) AS total_items FROM 
+ 		(SELECT * FROM bought_product 
+ 		INNER JOIN bill 
+		ON
+ 		bought_product_bill = bill.bill_id 
+		WHERE bought_product_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)) as table1
+ 	GROUP BY table1.bill_user) AS table2
+ WHERE total_items > 3) AND bill_id IN (SELECT last_id FROM 
+(SELECT bill_user, MAX(bill_id) AS last_id FROM 
+(SELECT * FROM bill 
+WHERE bill_user 
+IN
+	(SELECT bill_user FROM bought_product
+	INNER JOIN bill
+	ON
+	bought_product_bill = bill.bill_id 
+	WHERE bought_product_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+	GROUP BY bill_user
+HAVING COUNT(bought_product_original) > 3)) as table3
+GROUP BY bill_user) as table4)
+
+-- запрос последних чеков
+SELECT  MAX(bill_id) as last_id FROM bought_product
+	INNER JOIN bill
+	ON
+	bought_product_bill = bill.bill_id 
+	WHERE bought_product_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+	GROUP BY bill_user
+HAVING COUNT(bought_product_original) > 3
+
+--
+-- итоговый вариант (не рабочий)
+--
+UPDATE 
+bill 
+SET bill_sum =  bill_sum * CAST(0.9 as decimal(10, 2))
+WHERE bill_id IN (SELECT MAX(bill_id) as last_id FROM bought_product
+	INNER JOIN bill
+	ON
+	bought_product_bill = bill.bill_id 
+	WHERE bought_product_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+	GROUP BY bill_user
+HAVING COUNT(bought_product_original) > 3)
+
+-- 
+-- Итоговый рабочий вариант
+--
+
+UPDATE bill 
+INNER JOIN 
+	(SELECT 
+		MAX(bill_id) AS last_id 
+	FROM 
+		bought_product
+	INNER JOIN 
+		bill
+	ON
+		bought_product_bill = bill.bill_id 
+	WHERE 
+		bought_product_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+	GROUP BY 
+		bill_user
+	HAVING 
+		COUNT(bought_product_original) > 3) AS tbl2 
+ON 
+	bill.bill_id = tbl2.last_id
+SET 
+	bill_sum = bill_sum * CAST(0.9 AS decimal(10, 2))
+WHERE 
+	bill.bill_id = tbl2.last_id;
